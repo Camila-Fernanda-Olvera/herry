@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enciclopedia Mágica de Harry Potter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #5d5d5d;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --background-dark: #1a1a2e;
+            --text-light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231a1a2e"/><path d="M0 0L100 100M100 0L0 100" stroke="%23262645" stroke-width="1"/></svg>');
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--gryffindor-red) 0%, var(--slytherin-green) 25%, var(--ravenclaw-blue) 50%, var(--hufflepuff-yellow) 75%);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M50 10L60 40H90L65 60L75 90L50 70L25 90L35 60L10 40H40Z" fill="%23ffffff" opacity="0.1"/></svg>');
+            background-size: 100px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 25px;
+            border: 2px solid var(--gryffindor-gold);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gryffindor-gold);
+        }
+        
+        .search-box input:focus {
+            border-color: var(--hufflepuff-yellow);
+            box-shadow: 0 0 10px rgba(236, 185, 57, 0.5);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gryffindor.active {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+        }
+        
+        .slytherin.active {
+            background-color: var(--slytherin-green);
+            color: white;
+        }
+        
+        .ravenclaw.active {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+        }
+        
+        .hufflepuff.active {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+        }
+        
+        .all.active {
+            background: linear-gradient(135deg, var(--gryffindor-red), var(--slytherin-green), var(--ravenclaw-blue), var(--hufflepuff-yellow));
+            color: white;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card-image-container {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-info {
+            margin-top: 10px;
+        }
+        
+        .card-info p {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-info i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .gryffindor-card {
+            border-top: 5px solid var(--gryffindor-red);
+        }
+        
+        .slytherin-card {
+            border-top: 5px solid var(--slytherin-green);
+        }
+        
+        .ravenclaw-card {
+            border-top: 5px solid var(--ravenclaw-blue);
+        }
+        
+        .hufflepuff-card {
+            border-top: 5px solid var(--hufflepuff-yellow);
+        }
+        
+        .unknown-house-card {
+            border-top: 5px solid #666;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            grid-column: 1 / -1;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .house-icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Enciclopedia Mágica de Harry Potter</h1>
+            <p class="subtitle">Explora el mundo mágico de personajes, hechizos y más</p>
+        </header>
+        
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Buscar personajes...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn all active" data-house="all">
+                    <i class="fas fa-hat-wizard"></i> Todos
+                </button>
+                <button class="filter-btn gryffindor" data-house="Gryffindor">
+                    <i class="fas fa-lion"></i> Gryffindor
+                </button>
+                <button class="filter-btn slytherin" data-house="Slytherin">
+                    <i class="fas fa-serpent"></i> Slytherin
+                </button>
+                <button class="filter-btn ravenclaw" data-house="Ravenclaw">
+                    <i class="fas fa-eagle"></i> Ravenclaw
+                </button>
+                <button class="filter-btn hufflepuff" data-house="Hufflepuff">
+                    <i class="fas fa-badger"></i> Hufflepuff
+                </button>
+            </div>
+        </div>
+        
+        <div class="content" id="content">
+            <div class="loading">
+                <i class="fas fa-hat-wizard fa-spin"></i><br>
+                Cargando datos mágicos...
+            </div>
+        </div>
+        
+        <footer>
+            <p>Datos proporcionados por HP-API | Interfaz creada para fans de Harry Potter</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('content');
+            const searchInput = document.getElementById('search-input');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            let characters = [];
+            let activeHouse = 'all';
+            
+            // Cargar datos de la API
+            async function fetchData() {
+                try {
+                    content.innerHTML = `
+                        <div class="loading">
+                            <i class="fas fa-hat-wizard fa-spin"></i><br>
+                            Cargando datos mágicos...
+                        </div>
+                    `;
+                    
+                    // Obtener personajes
+                    const charactersResponse = await fetch('https://hp-api.onrender.com/api/characters');
+                    
+                    if (!charactersResponse.ok) {
+                        throw new Error('Error al cargar los personajes');
+                    }
+                    
+                    characters = await charactersResponse.json();
+                    
+                    // Limpiar datos - asegurarse de que no haya valores undefined
+                    characters = characters.map(character => {
+                        return {
+                            name: character.name || 'Nombre desconocido',
+                            house: character.house || 'Casa desconocida',
+                            wand: character.wand || { wood: 'Desconocida', core: 'Desconocida', length: 'Desconocida' },
+                            yearOfBirth: character.yearOfBirth || 'Desconocido',
+                            ancestry: character.ancestry || 'Desconocidos',
+                            actor: character.actor || 'Desconocido',
+                            image: character.image || '',
+                            patronus: character.patronus || 'Desconocido'
+                        };
+                    });
+                    
+                    displayCharacters(characters);
+                } catch (error) {
+                    console.error('Error al cargar los datos:', error);
+                    content.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i><br>
+                            Error al cargar los datos mágicos. Intenta nuevamente.
+                        </div>
+                    `;
+                }
+            }
+            
+            // Mostrar personajes en la interfaz
+            function displayCharacters(charactersToDisplay) {
+                if (charactersToDisplay.length === 0) {
+                    content.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i><br>
+                            No se encontraron personajes que coincidan con tu búsqueda.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                content.innerHTML = '';
+                
+                charactersToDisplay.forEach(character => {
+                    const house = character.house;
+                    let houseClass = 'unknown-house';
+                    
+                    if (house.includes('Gryffindor')) houseClass = 'gryffindor';
+                    else if (house.includes('Slytherin')) houseClass = 'slytherin';
+                    else if (house.includes('Ravenclaw')) houseClass = 'ravenclaw';
+                    else if (house.includes('Hufflepuff')) houseClass = 'hufflepuff';
+                    
+                    const card = document.createElement('div');
+                    card.className = `card ${houseClass}-card`;
+                    
+                    // Crear imagen o placeholder
+                    let imageContent = '';
+                    if (character.image && character.image.trim() !== '') {
+                        imageContent = `<img src="${character.image}" alt="${character.name}" class="card-image" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\' style=\'font-size: 60px; color: #aaa;\'></i>';">`;
+                    } else {
+                        imageContent = `<i class="fas fa-user" style="font-size: 60px; color: #aaa;"></i>`;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="card-header">${character.name}</div>
+                        <div class="card-image-container">
+                            ${imageContent}
+                        </div>
+                        <div class="card-body">
+                            <div class="card-info">
+                                <p><i class="fas fa-home"></i> Casa: ${house}</p>
+                                <p><i class="fas fa-magic"></i> Varita: ${character.wand.wood}</p>
+                                <p><i class="fas fa-birthday-cake"></i> Nacimiento: ${character.yearOfBirth}</p>
+                                <p><i class="fas fa-people-arrows"></i> Ancestros: ${character.ancestry}</p>
+                                <p><i class="fas fa-user-tie"></i> Actor: ${character.actor}</p>
+                                ${character.patronus !== 'Desconocido' ? `<p><i class="fas fa-paw"></i> Patronus: ${character.patronus}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    content.appendChild(card);
+                });
+            }
+            
+            // Filtrar personajes por casa
+            function filterByHouse(house) {
+                if (house === 'all') {
+                    return characters;
+                }
+                return characters.filter(character => 
+                    character.house && character.house.includes(house)
+                );
+            }
+            
+            // Buscar personajes
+            function searchCharacters(query) {
+                const filteredByHouse = filterByHouse(activeHouse);
+                return filteredByHouse.filter(character => 
+                    character.name.toLowerCase().includes(query.toLowerCase()) ||
+                    (character.house && character.house.toLowerCase().includes(query.toLowerCase())) ||
+                    (character.actor && character.actor.toLowerCase().includes(query.toLowerCase())) ||
+                    (character.ancestry && character.ancestry.toLowerCase().includes(query.toLowerCase()))
+                );
+            }
+            
+            // Manejar eventos de filtrado
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase active de todos los botones
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Agregar clase active al botón clickeado
+                    this.classList.add('active');
+                    
+                    // Actualizar casa activa
+                    activeHouse = this.getAttribute('data-house');
+                    
+                    // Filtrar y mostrar personajes
+                    const filteredCharacters = filterByHouse(activeHouse);
+                    const searchQuery = searchInput.value;
+                    
+                    if (searchQuery) {
+                        const searchedCharacters = searchCharacters(searchQuery);
+                        displayCharacters(searchedCharacters);
+                    } else {
+                        displayCharacters(filteredCharacters);
+                    }
+                });
+            });
+            
+            // Manejar evento de búsqueda
+            searchInput.addEventListener('input', function() {
+                const query = this.value;
+                
+                if (query) {
+                    const searchedCharacters = searchCharacters(query);
+                    displayCharacters(searchedCharacters);
+                } else {
+                    const filteredCharacters = filterByHouse(activeHouse);
+                    displayCharacters(filteredCharacters);
+                }
+            });
+            
+            // Inicializar la aplicación
+            fetchData();
+        });
+    </script>
+</body>
+</html>
